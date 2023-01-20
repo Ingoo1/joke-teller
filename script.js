@@ -1,20 +1,32 @@
 const button = document.getElementById('button');
 const audioElement = document.getElementById('audio');
 
-// function test() {
-//   VoiceRSS.speech({
-//     key: '61dae9e838314f7bbdd23874bcb56d23',
-//     src: 'Hello, world!',
-//     hl: 'en-us',
-//     v: 'Linda',
-//     r: 0,
-//     c: 'mp3',
-//     f: '44khz_16bit_stereo',
-//     ssml: false,
-//   });
-// }
+// Disable/Enable Button
+function toggleButton() {
+  button.disabled = !button.disabled;
+  toggleButtonText();
+}
 
-// test();
+function toggleButtonText() {
+  if (button.disabled) {
+    button.textContent = 'Wait for the end...';
+  } else {
+    button.textContent = 'Tell Me A Joke';
+  }
+}
+// VoiceRSS Speech Function
+function tellMe(joke) {
+  VoiceRSS.speech({
+    key: '61dae9e838314f7bbdd23874bcb56d23',
+    src: joke,
+    hl: 'en-us',
+    v: 'Linda',
+    r: 2,
+    c: 'mp3',
+    f: '44khz_16bit_stereo',
+    ssml: false,
+  });
+}
 
 // Get jokes from Joke API
 async function getJokes() {
@@ -29,10 +41,16 @@ async function getJokes() {
     } else {
       joke = data.joke;
     }
-    console.log(joke);
+    // Passing Joke to VoiceRSS API
+    tellMe(joke);
+    // Disable Button
+    toggleButton();
   } catch (err) {
     console.log('Woops!', err);
+    button.textContent = 'Woops! :(';
   }
 }
 
-getJokes();
+// Event Listeners
+button.addEventListener('click', getJokes);
+audioElement.addEventListener('ended', toggleButton);
